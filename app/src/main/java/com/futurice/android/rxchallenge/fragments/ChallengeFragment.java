@@ -91,8 +91,7 @@ public class ChallengeFragment extends Fragment {
                                     concatenation.length() - Solution.SECRET_SEQUENCE.length());
                         }
                     }
-                }
-                               );
+                });
     }
 
     @Override
@@ -116,8 +115,7 @@ public class ChallengeFragment extends Fragment {
                               public void call(String s) {
                                   resultTextView.setText(s);
                               }
-                          })
-                                 );
+                          }));
     }
 
     @Override
