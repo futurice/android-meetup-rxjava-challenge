@@ -1,6 +1,7 @@
-package com.futurice.project;
+package com.futurice.android.rxchallenge;
 
-import com.futurice.project.fragments.ChallengeFragment;
+import com.futurice.android.rxchallenge.fragments.ChallengeFragment;
+import com.futurice.rxchallenge.R;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -8,14 +9,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, new ChallengeFragment())
-                .commit();
+                                       .add(R.id.container, new ChallengeFragment())
+                                       .commit();
         }
     }
 

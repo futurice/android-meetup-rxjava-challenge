@@ -1,20 +1,19 @@
-package com.futurice.project.test.robolectric;
+package com.futurice.rxchallenge;
 
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
+import com.futurice.android.rxchallenge.Solution;
+
+import org.junit.Test;
 import org.mockito.InOrder;
-import com.futurice.project.Solution;
-import com.futurice.project.test.robolectric.RobolectricGradleTestRunner;
+
 import java.util.concurrent.TimeUnit;
+
 import rx.Observer;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
-@Config(emulateSdk = 18)
-@RunWith(RobolectricGradleTestRunner.class)
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+
 public class SolutionTest {
 
     @Test
@@ -148,7 +147,8 @@ public class SolutionTest {
     }
 
     @Test
-    public void test_solutionOperatorIgnoresSecretSequenceIfNotWithinTimeoutOfFirstInput() throws Exception {
+    public void test_solutionOperatorIgnoresSecretSequenceIfNotWithinTimeoutOfFirstInput()
+            throws Exception {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         TestScheduler s = new TestScheduler();
