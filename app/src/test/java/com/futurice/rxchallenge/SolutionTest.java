@@ -3,201 +3,188 @@ package com.futurice.rxchallenge;
 import com.futurice.android.rxchallenge.Solution;
 
 import org.junit.Test;
-import org.mockito.InOrder;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Observer;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 
 public class SolutionTest {
 
     @Test
     public void test_solutionOperatorFindsSimpleSecretSequence() throws Exception {
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        TestScheduler s = new TestScheduler();
+        TestScheduler sched = new TestScheduler();
+        TestSubscriber<String> sub = new TestSubscriber<>();
         PublishSubject<String> o = PublishSubject.create();
-        Solution.defineSuccessStream(o, s).subscribe(observer);
+        Solution.defineSuccessStream(o, sched).subscribe(sub);
 
         // send events with simulated time increments
-        s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(50, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(50, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(100, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(100, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(150, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(150, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(200, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(200, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(250, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(250, TimeUnit.MILLISECONDS);
         o.onNext("A");
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onNext("ABBABA");
-        inOrder.verifyNoMoreInteractions();
+        sub.assertNoErrors();
+        sub.assertValue("ABBABA");
     }
 
     @Test
     public void test_solutionOperatorIgnoresSecretSequenceIfNotWithinTimeout() throws Exception {
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        TestScheduler s = new TestScheduler();
+        TestScheduler sched = new TestScheduler();
+        TestSubscriber<String> sub = new TestSubscriber<>();
         PublishSubject<String> o = PublishSubject.create();
-        Solution.defineSuccessStream(o, s).subscribe(observer);
+        Solution.defineSuccessStream(o, sched).subscribe(sub);
 
         // send events with simulated time increments
-        s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(50, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(50, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(100, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(100, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(150, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(150, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(200, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(200, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(8000, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(8000, TimeUnit.MILLISECONDS);
         o.onNext("A");
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verifyNoMoreInteractions();
+        sub.assertNoErrors();
+        sub.assertNoValues();
     }
 
     @Test
     public void test_solutionOperatorIgnoresWrongSequences() throws Exception {
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        TestScheduler s = new TestScheduler();
+        TestScheduler sched = new TestScheduler();
+        TestSubscriber<String> sub = new TestSubscriber<>();
         PublishSubject<String> o = PublishSubject.create();
-        Solution.defineSuccessStream(o, s).subscribe(observer);
+        Solution.defineSuccessStream(o, sched).subscribe(sub);
 
         // send events with simulated time increments
-        s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(50, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(50, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(100, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(100, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(150, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(150, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(200, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(200, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(250, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(250, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(300, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(300, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(350, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(350, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(400, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(400, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(450, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(450, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(500, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(500, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(550, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(550, TimeUnit.MILLISECONDS);
         o.onNext("B");
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verifyNoMoreInteractions();
+        sub.assertNoErrors();
+        sub.assertNoValues();
     }
 
     @Test
     public void test_solutionOperatorFindsSecretSequenceAsASuffix() throws Exception {
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        TestScheduler s = new TestScheduler();
+        TestScheduler sched = new TestScheduler();
+        TestSubscriber<String> sub = new TestSubscriber<>();
         PublishSubject<String> o = PublishSubject.create();
-        Solution.defineSuccessStream(o, s).subscribe(observer);
+        Solution.defineSuccessStream(o, sched).subscribe(sub);
 
         // send events with simulated time increments
-        s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(50, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(50, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(100, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(100, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(150, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(150, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(200, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(200, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(250, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(250, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(300, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(300, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(350, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(350, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(400, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(400, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(450, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(450, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(500, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(500, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(550, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(550, TimeUnit.MILLISECONDS);
         o.onNext("A");
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onNext("ABBABA");
-        inOrder.verifyNoMoreInteractions();
+        sub.assertNoErrors();
+        sub.assertValue("ABBABA");
     }
 
     @Test
     public void test_solutionOperatorIgnoresSecretSequenceIfNotWithinTimeoutOfFirstInput()
             throws Exception {
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        TestScheduler s = new TestScheduler();
+        TestScheduler sched = new TestScheduler();
+        TestSubscriber<String> sub = new TestSubscriber<>();
         PublishSubject<String> o = PublishSubject.create();
-        Solution.defineSuccessStream(o, s).subscribe(observer);
+        Solution.defineSuccessStream(o, sched).subscribe(sub);
 
         // send events with simulated time increments
-        s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(100, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(100, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(200, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(200, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(300, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(300, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(400, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(400, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(4200, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(4200, TimeUnit.MILLISECONDS);
         o.onNext("A");
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verifyNoMoreInteractions();
+        sub.assertNoErrors();
+        sub.assertNoValues();
     }
 
     @Test
     public void test_solutionOperatorFindsSecretSequenceWithinTightTimeout() throws Exception {
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        TestScheduler s = new TestScheduler();
+        TestScheduler sched = new TestScheduler();
+        TestSubscriber<String> sub = new TestSubscriber<>();
         PublishSubject<String> o = PublishSubject.create();
-        Solution.defineSuccessStream(o, s).subscribe(observer);
+        Solution.defineSuccessStream(o, sched).subscribe(sub);
 
         // send events with simulated time increments
-        s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(0, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(100, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(100, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(200, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(200, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(300, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(300, TimeUnit.MILLISECONDS);
         o.onNext("A");
-        s.advanceTimeTo(400, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(400, TimeUnit.MILLISECONDS);
         o.onNext("B");
-        s.advanceTimeTo(3900, TimeUnit.MILLISECONDS);
+        sched.advanceTimeTo(3900, TimeUnit.MILLISECONDS);
         o.onNext("A");
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onNext("ABBABA");
-        inOrder.verifyNoMoreInteractions();
+        sub.assertNoErrors();
+        sub.assertValue("ABBABA");
     }
 
 }
