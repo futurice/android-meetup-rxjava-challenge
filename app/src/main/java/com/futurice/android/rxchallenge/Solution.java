@@ -1,7 +1,14 @@
 package com.futurice.android.rxchallenge;
 
+import android.support.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import rx.Observable;
 import rx.Scheduler;
+import rx.functions.Func1;
 
 public class Solution {
 
@@ -21,11 +28,37 @@ public class Solution {
      * @return an observable event stream of String, that returns the secret sequence AT THE RIGHT
      * time according to the problem specification.
      */
-    public static Observable<String> defineSuccessStream(Observable<String> inputStream,
-                                                         Scheduler scheduler) {
+    @NonNull
+    public static Observable<String> defineSuccessStream(
+            @NonNull final Observable<String> inputStream,
+            @NonNull final Scheduler scheduler) {
         // TODO Your code goes here. Return an Observable<String> to solve the problem.
         // You can use the statics SECRET_SEQUENCE and SEQUENCE_TIMEOUT here.
-        return Observable.empty(); // TODO delete me and replace with your solution
+        return inputStream.buffer(SECRET_SEQUENCE.length())
+                          .timeout(SEQUENCE_TIMEOUT, TimeUnit.MILLISECONDS,
+                                   Observable.<List<String>>empty(), scheduler)
+                          .repeat(scheduler)
+                          .map(new Func1<List<String>, String>() {
+                              @Override
+                              public String call(@NonNull final List<String> strings) {
+                                  return concatToString(strings);
+                              }
+                          })
+                          .filter(new Func1<String, Boolean>() {
+                              @Override
+                              public Boolean call(@NonNull final String s) {
+                                  return SECRET_SEQUENCE.equals(s);
+                              }
+                          });
+    }
+
+    @NonNull
+    private static String concatToString(@NonNull final Collection<String> stringCollection) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String str : stringCollection) {
+            stringBuilder.append(str);
+        }
+        return stringBuilder.toString();
     }
 
 }
