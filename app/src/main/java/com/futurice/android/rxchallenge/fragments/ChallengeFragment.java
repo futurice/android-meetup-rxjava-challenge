@@ -1,7 +1,7 @@
-package com.futurice.project.fragments;
+package com.futurice.android.rxchallenge.fragments;
 
-import com.futurice.project.R;
-import com.futurice.project.Solution;
+import com.futurice.rxchallenge.R;
+import com.futurice.android.rxchallenge.Solution;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -40,8 +40,7 @@ public class ChallengeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState)
-    {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
@@ -81,18 +80,18 @@ public class ChallengeFragment extends Fragment {
 
     private static Observable<String> defineSequenceStream(Observable<String> inputStream) {
         return inputStream.scan(
-        "", new Func2<String, String, String>() {
-            @Override
-            public String call(String s1, String s2) {
-                String concatenation = (s1 + s2);
-                if (concatenation.length() <= 6) {
-                    return concatenation;
-                } else {
-                    return concatenation.substring(concatenation.length() - Solution.SECRET_SEQUENCE.length());
-                }
-            }
-        }
-        );
+                "", new Func2<String, String, String>() {
+                    @Override
+                    public String call(String s1, String s2) {
+                        String concatenation = (s1 + s2);
+                        if (concatenation.length() <= 6) {
+                            return concatenation;
+                        } else {
+                            return concatenation.substring(
+                                    concatenation.length() - Solution.SECRET_SEQUENCE.length());
+                        }
+                    }
+                });
     }
 
     @Override
@@ -102,22 +101,21 @@ public class ChallengeFragment extends Fragment {
     }
 
     private void subscribeResultTextView() {
-        Observable<String> correctStream =  successStream.map(new Func1<String, String>() {
+        Observable<String> correctStream = successStream.map(new Func1<String, String>() {
             @Override
             public String call(String s) {
                 return "CORRECT!";
             }
         });
         compositeSubscription.add(
-            Observable.merge(sequenceStream, correctStream)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        resultTextView.setText(s);
-                    }
-                })
-        );
+                Observable.merge(sequenceStream, correctStream)
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .subscribe(new Action1<String>() {
+                              @Override
+                              public void call(String s) {
+                                  resultTextView.setText(s);
+                              }
+                          }));
     }
 
     @Override
